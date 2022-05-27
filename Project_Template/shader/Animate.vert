@@ -16,8 +16,8 @@ layout(binding=4) uniform sampler2D NoiseTex;
 
 uniform float Time;
 
-uniform float Freq = 0.5;
-uniform float Velocity = 0.5;
+uniform float Freq = 1.5;
+uniform float Velocity = 1.0;
 uniform float Amp = 0.6;
 
 uniform mat4 ModelViewMatrix;
@@ -30,7 +30,7 @@ void main()
 
     vec3 pos = VertexPosition;
 
-    float u = (Freq * pos.x  - Velocity * (Time));
+    float u = (Freq *  pos.x  - Velocity * (Time));
     float v = (Freq * pos.z - Velocity * (Time));
 
     pos.y = Amp * ( sin(u) + sin(v) );
@@ -41,9 +41,9 @@ void main()
     
 
     Position = (ModelViewMatrix * vec4(pos,1.0)).xyz;
-    Normal = NormalMatrix * norm;   
+    Normal = normalize(NormalMatrix * VertexNormal);   
     
-    TexCoord= VertexTexCoord;
+    TexCoord = VertexTexCoord;
 
     gl_Position = MVP * vec4(pos,1.0);
 

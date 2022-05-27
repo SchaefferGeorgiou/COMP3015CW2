@@ -34,6 +34,8 @@ uniform struct MaterialInfo
 vec3 blinnPhong(vec3 position, vec3 normal, vec3 colour, vec3 spec) 
 {
     
+    
+
     vec3 diffuse = vec3(0.0f);
         
     vec3 specular = vec3(0.0f);
@@ -67,7 +69,7 @@ void main()
     
 
 
-    FragColour = vec4(blinnPhong(pos , norm, noise.rgb , spec),1.0);
+    FragColour = vec4(blinnPhong(pos , norm, diff / noise.rgb , spec),1.0);
 
     
 }

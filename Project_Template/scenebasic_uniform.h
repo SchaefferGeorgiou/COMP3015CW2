@@ -26,15 +26,15 @@ private:
     GLuint deferredFBO;
 
     //To project everything onto
-    GLuint quad[2], vbos[7];
-
+    GLuint object1, object2, vbos[2];
+    float angle, tPrev, rotSpeed;
 
     //For Textures
     
 
     Plane plane;
 
-    float angle, time;
+    float time;
 
     void setMatrices(GLSLProgram&);
     void compile();
