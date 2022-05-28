@@ -7,10 +7,10 @@ layout (location = 1) in vec3 Normal;
 layout (location = 2) in vec2 TexCoord;
 
 //OUT
-layout (location = 5) out vec3 PositionData;
-layout (location = 6) out vec3 NormalData;
-layout (location = 7) out vec3 ColourData;
-layout (location = 8) out vec3 SpecularData;
+layout (location = 1) out vec3 PositionData;
+layout (location = 2) out vec3 NormalData;
+layout (location = 3) out vec3 ColourData;
+layout (location = 4) out vec3 SpecularData;
 
 
 

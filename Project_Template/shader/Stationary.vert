@@ -10,6 +10,9 @@ layout (location = 1) out vec3 Normal;
 layout (location = 2) out vec2 TexCoord;
 
 
+
+
+
 uniform mat4 ModelMatrix;
 uniform mat4 ViewMatrix;
 uniform mat3 NormalMatrix;
@@ -17,7 +20,8 @@ uniform mat4 MVP;
 
 void main()
 { 
-	
+
+
     Position = (( ModelMatrix * ViewMatrix) * vec4(VertexPosition,1.0)).xyz;
     Normal = normalize(NormalMatrix * VertexNormal);   
     

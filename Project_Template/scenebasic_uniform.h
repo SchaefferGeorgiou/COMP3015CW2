@@ -18,7 +18,7 @@ private:
     GLSLProgram generateNoise, animate, stationary, shadow, lighting;
 
    
-    GLuint deferredFBO;
+    GLuint deferredFBO1, deferredFBO2;
 
     //To project everything onto
     GLuint vao, vbos[2];

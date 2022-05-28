@@ -23,7 +23,7 @@ using glm::vec4;
 using glm::mat4;
 
 
-SceneBasic_Uniform::SceneBasic_Uniform() : time(0), angle(0.0f), tPrev(0.0f), rotSpeed(glm::pi<float>() / 8.0f), plane(10.0f, 10.0f, 10, 10)
+SceneBasic_Uniform::SceneBasic_Uniform() : time(0), angle(0.0f), tPrev(0.0f), rotSpeed(glm::pi<float>() / 8.0f), plane(50.0f, 50.0f, 100, 100)
 {
 	mesh = ObjMesh::load("../Project_Template/media/SmallSpaceFighter.obj", true);
 }
@@ -211,12 +211,12 @@ void SceneBasic_Uniform::createGBufTex(GLenum texUnit, GLenum format, GLuint& te
 void SceneBasic_Uniform::setupFBO()
 {
 
-	GLuint depthBuf1, posTex1, normTex1, colourTex1, specTex1, noiseTex, shadowTex;
+	GLuint depthBuf1, posTex1, normTex1, colourTex1, specTex1, noiseTex;
 
 	
 	// Create and bind the FBO
-	glGenFramebuffers(1, &deferredFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO);
+	glGenFramebuffers(1, &deferredFBO1);
+	glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO1);
 
 	// The depth buffer
 	glGenRenderbuffers(1, &depthBuf1);
@@ -234,14 +234,7 @@ void SceneBasic_Uniform::setupFBO()
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, noiseTexture);
 
-	GLuint posTex2, normTex2, colourTex2, specTex2;
 
-	createGBufTex(GL_TEXTURE5, GL_RGB32F, posTex2); // Position2
-	createGBufTex(GL_TEXTURE6, GL_RGB32F, normTex2); // Normal2
-	createGBufTex(GL_TEXTURE7, GL_RGB32F, colourTex2); // Colour/Texture2
-	createGBufTex(GL_TEXTURE8, GL_RGB32F, specTex2); //Specular2
-
-	createGBufTex(GL_TEXTURE9, GL_RGB32F, shadowTex);//Shadow Map
 
 	// Attach the textures to the framebuffer
 	//Obj1	
@@ -257,36 +250,63 @@ void SceneBasic_Uniform::setupFBO()
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, noiseTex, 0);
 
-	//Obj2
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D, posTex2, 0);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, GL_TEXTURE_2D, normTex2, 0);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT7, GL_TEXTURE_2D, colourTex2, 0);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT8, GL_TEXTURE_2D, specTex2, 0);
-
-	//Both
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT9, GL_TEXTURE_2D, shadowTex, 0);
-
-	GLenum drawBuffers[] = { GL_NONE,
+	GLenum drawBuffers1[] = { GL_NONE,
 							 GL_COLOR_ATTACHMENT0,
 							 GL_COLOR_ATTACHMENT1,
 							 GL_COLOR_ATTACHMENT2,
 							 GL_COLOR_ATTACHMENT3,
-							 GL_COLOR_ATTACHMENT4,
-							 GL_COLOR_ATTACHMENT5,
-							 GL_COLOR_ATTACHMENT6,
-							 GL_COLOR_ATTACHMENT7,
-							 GL_COLOR_ATTACHMENT8,
-							 GL_COLOR_ATTACHMENT9
+							 GL_COLOR_ATTACHMENT4
+							 
 						
 	};
 
+	glDrawBuffers(6, drawBuffers1);
 
 
+	GLuint depthBuf2, posTex2, normTex2, colourTex2, specTex2, shadowTex;
 
-	glDrawBuffers(8, drawBuffers);
+	glGenFramebuffers(1, &deferredFBO2);
+	glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO2);
+
+	glGenRenderbuffers(1, &depthBuf2);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBuf2);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+	
+
+	createGBufTex(GL_TEXTURE5, GL_RGB32F, posTex2); // Position2
+	createGBufTex(GL_TEXTURE6, GL_RGB32F, normTex2); // Normal2
+	createGBufTex(GL_TEXTURE7, GL_RGB8, colourTex2); // Colour/Texture2
+	createGBufTex(GL_TEXTURE8, GL_RGB8, specTex2); //Specular2
+
+	createGBufTex(GL_TEXTURE9, GL_RGB8, shadowTex);//Shadow Map
+
+	//Obj2
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuf2);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, posTex2, 0);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normTex2, 0);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, colourTex2, 0);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, specTex2, 0);
+
+	//SHADOW
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, shadowTex, 0);
+
+
+	GLenum drawBuffers2[] = { GL_NONE,
+						  GL_COLOR_ATTACHMENT0,
+						  GL_COLOR_ATTACHMENT1,
+						  GL_COLOR_ATTACHMENT2,
+						  GL_COLOR_ATTACHMENT3,
+						  GL_COLOR_ATTACHMENT4
+
+	};	
+
+	glDrawBuffers(6, drawBuffers2);
 }
 
 #pragma region Passes
@@ -295,13 +315,13 @@ void SceneBasic_Uniform::Pass1()
 {
 	generateNoise.use();
 
-	glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 
 
 	model = mat4(1.0);
-	view = glm::lookAt(vec3(10.0f * cos(angle), 4.0f, 70.0f * sin(angle)), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	view = glm::lookAt(vec3(10.0f * cos(angle), 6.5f, 17.0f * sin(angle)), vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 	projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.3f, 100.0f);	
 	
 }
@@ -318,7 +338,7 @@ void SceneBasic_Uniform::Pass2()
 	
 	animate.setUniform("Time", time);
 
-	animate.setUniform("Material.Kd", 0.7f, 0.0f, 0.3f);
+	animate.setUniform("Material.Kd", 0.9f, 0.0f, 0.3f);
 	animate.setUniform("Material.Ks", 0.9f, 0.9f, 0.9f);
 
 	model = mat4(1.0);
@@ -333,15 +353,17 @@ void SceneBasic_Uniform::Pass2()
 
 void SceneBasic_Uniform::Pass3()
 {
+	glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO2);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+
 	stationary.use();
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	stationary.setUniform("Material.Kd", 0.0f, 0.3f, 0.7f);
+	stationary.setUniform("Material.Kd", 0.0f, 0.3f, 0.9f);
 	stationary.setUniform("Material.Ks", 0.9f, 0.9f, 0.9f);
 
 	model = mat4(1.0);
-	/*model = glm::translate(model, vec3(0.0f, 10.0f, 0.0f));*/
+	model = glm::translate(model, vec3(0.0f, 5.0f, 0.0f));
 
 	setMatrices(stationary);
 
@@ -371,7 +393,7 @@ void SceneBasic_Uniform::Pass5()
 
 
 	lighting.setUniform("Light.Intensity", 1.0f);
-	lighting.setUniform("Light.Position", vec4(0.0f, 4.0f, 0.0f, 1.0f));
+	lighting.setUniform("Light.Position", vec4(0.0f, 20.0f, 0.0f, 1.0f));
 	lighting.setUniform("Material.Shininess", 60.0f);
 
 	glBindVertexArray(vao);

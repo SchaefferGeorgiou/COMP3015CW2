@@ -41,20 +41,20 @@ uniform struct MaterialInfo
 vec3 blinnPhong(vec3 position, vec3 normal, vec3 colour, vec3 spec) 
 {
     
-    vec3 ambient = vec3(0.0,0.0,0.0);
+    vec3 ambient = vec3(0.0f,0.0f,0.0f);
 
     vec3 diffuse = vec3(0.0f);
         
     vec3 specular = vec3(0.0f);
 
-    vec3 s = normalize(((Light.Position).xyz - position)); //calculate s vector       
-//    vec3 s = normalize(Light.Position.xyz);
+    //vec3 s = normalize(((Light.Position).xyz - position)); //calculate s vector       
+    vec3 s = normalize(Light.Position.xyz);
 
     float sDotn = max(dot(s,normal), 0.0f) ; //calculate dot product between s and n
     
     diffuse =  (colour * sDotn) ; //calculate the diffuse
 
-    if( sDotn > 0.0 )
+    if( sDotn > 0.0f )
     {
         vec3 v = normalize(-position.xyz);
         vec3 h = normalize(v + s);
