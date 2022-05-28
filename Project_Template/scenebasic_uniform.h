@@ -22,15 +22,14 @@ private:
 
     GLSLProgram prog1, prog2, prog3, prog4;
 
-    //To hold all the things
+   
     GLuint deferredFBO;
 
     //To project everything onto
     GLuint object1, object2, vbos[2];
     float angle, tPrev, rotSpeed;
-
-    //For Textures
-    
+    glm::mat4 modelPosition;
+     
 
     Plane plane;
 

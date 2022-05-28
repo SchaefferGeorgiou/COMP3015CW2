@@ -228,9 +228,9 @@ void SceneBasic_Uniform::setupFBO()
 	
 
 
-	//GLuint noiseTexture = NoiseTex::generate2DTex(6.0f);
-	//glActiveTexture(GL_TEXTURE4);
-	//glBindTexture(GL_TEXTURE_2D, noiseTexture);
+	GLuint noiseTexture = NoiseTex::generate2DTex(6.0f);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, noiseTexture);
 
 	// Attach the textures to the framebuffer
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuf);
@@ -273,7 +273,7 @@ void SceneBasic_Uniform::Pass1()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 
-	view = glm::lookAt(vec3(20.0f * cos(angle), 4.0f, 70.0f * sin(angle)), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	view = glm::lookAt(vec3(20.0f * cos(angle), 4.0f, 50.0f * sin(angle)), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 	projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.3f, 100.0f);
 
 	
@@ -302,7 +302,8 @@ void SceneBasic_Uniform::Pass2()
 
 	setMatrices(prog2);
 
-
+	modelPosition = model;
+	
 	plane.render();
 	
 }
@@ -316,15 +317,16 @@ void SceneBasic_Uniform::Pass3()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glDisable(GL_DEPTH_TEST);
 
-	prog3.setUniform("Light.Position", vec4(0.0f,20.0f, -12.0f, 1.0f));
+	
 	prog3.setUniform("Light.Intensity", 1.0f);
-
-	prog3.setUniform("Material.Shininess", 80.0f);
+	prog3.setUniform("Light.Position", vec4(0.0f, 10.0f, 0.0f, 1.0f) + (model * (vec4(1.0f, 1.0f, 1.0f, 1.0f))));
+	prog3.setUniform("Material.Shininess", 20.0f);
 
 	view = mat4(1.0);
 	model = mat4(1.0);
 	projection = mat4(1.0);
 	setMatrices(prog3);	
+	
 	
 
 	glBindVertexArray(object1);

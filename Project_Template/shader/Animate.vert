@@ -16,8 +16,8 @@ layout(binding=4) uniform sampler2D NoiseTex;
 
 uniform float Time;
 
-uniform float Freq = 1.5;
-uniform float Velocity = 1.0;
+uniform float Freq = 0.5;
+uniform float Velocity = 0.5;
 uniform float Amp = 0.6;
 
 uniform mat4 ModelViewMatrix;
