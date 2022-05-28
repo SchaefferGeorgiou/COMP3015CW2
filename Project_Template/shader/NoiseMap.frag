@@ -25,7 +25,7 @@ void makeTexture()
 	float t = (cos(noise.a * PI) + 1) / 2;
 	vec4 colour = mix(Colour1, Colour2, t);
 
-	NoiseData = vec4(colour.rgb, 1.0);
+	NoiseData = colour.rgba;
 }
 
 void main()

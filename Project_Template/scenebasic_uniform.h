@@ -5,33 +5,27 @@
 
 #include <glad/glad.h>
 #include "helper/glslprogram.h"
-#include "helper/torus.h"
-#include "helper/teapot.h"
 #include "helper/frustum.h"
 
 #include "helper/plane.h"
 #include "helper/objmesh.h"
-#include "helper/cube.h"
-#include "helper/skybox.h"
-#include "helper/sphere.h"
 #include "helper/noisetex.h"
 
 class SceneBasic_Uniform : public Scene
 {
 private:
 
-    GLSLProgram prog1, prog2, prog3, prog4;
+    GLSLProgram generateNoise, animate, stationary, shadow, lighting;
 
    
     GLuint deferredFBO;
 
     //To project everything onto
-    GLuint object1, object2, vbos[2];
-    float angle, tPrev, rotSpeed;
-    glm::mat4 modelPosition;
-     
+    GLuint vao, vbos[2];
+    float angle, tPrev, rotSpeed;     
 
     Plane plane;
+    std::unique_ptr<ObjMesh> mesh;
 
     float time;
 
@@ -46,6 +40,7 @@ private:
     void Pass2();
     void Pass3();
     void Pass4();
+    void Pass5();
 
 public:
     SceneBasic_Uniform();

@@ -39,12 +39,6 @@
     <ClCompile Include="scenebasic_uniform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="helper\teapot.cpp">
-      <Filter>helper</Filter>
-    </ClCompile>
-    <ClCompile Include="helper\torus.cpp">
-      <Filter>helper</Filter>
-    </ClCompile>
     <ClCompile Include="helper\trianglemesh.cpp">
       <Filter>helper</Filter>
     </ClCompile>
@@ -57,20 +51,11 @@
     <ClCompile Include="helper\plane.cpp">
       <Filter>helper</Filter>
     </ClCompile>
-    <ClCompile Include="helper\cube.cpp">
-      <Filter>helper</Filter>
-    </ClCompile>
-    <ClCompile Include="helper\skybox.cpp">
-      <Filter>helper</Filter>
-    </ClCompile>
     <ClCompile Include="helper\texture.cpp">
       <Filter>helper</Filter>
     </ClCompile>
     <ClCompile Include="helper\stb\stb_image.cpp">
       <Filter>helper\stb</Filter>
-    </ClCompile>
-    <ClCompile Include="helper\sphere.cpp">
-      <Filter>helper</Filter>
     </ClCompile>
     <ClCompile Include="helper\frustum.cpp">
       <Filter>helper</Filter>
@@ -80,172 +65,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader\basic_uniform_diffuse.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_diffuse.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_phong.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_phong.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_phong_multiple.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_phong_multiple.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_spotlight.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_spotlight.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_toon.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_toon.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_fog.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_fog.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_texture.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_texture.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_multi_texture.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_alpha.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_normal_map.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_normal_map.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_skybox.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_skybox.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_edge_detection.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_edge_detection.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_gaussian_blur.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_gaussian_blur.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_hdr.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_hdr.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_bloom.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_bloom.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_gamma_correction.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_gamma_correction.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_deferred.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_deferred.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_point_sprite.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_point_sprite.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_point_sprite.geom">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_wireframe.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_wireframe.geom">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_wireframe.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_silhouette.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_silhouette.geom">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_silhouette.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_surface_animation.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_surface_animation.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_shadow_map.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_shadow_map.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\solid.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\solid.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_cloud_effect.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\basic_uniform_Blinn_phong_cloud_effect.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\First.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\First.vert">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="shader\NoiseMap.frag">
       <Filter>shaders</Filter>
     </None>
     <None Include="shader\NoiseMap.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\First.geom">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\Deferr.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\Deferr.vert">
       <Filter>shaders</Filter>
     </None>
     <None Include="shader\BlinnPhong.frag">
@@ -260,10 +83,16 @@
     <None Include="shader\Animate.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shader\Flat.frag">
+    <None Include="shader\Shadow.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shader\Flat.vert">
+    <None Include="shader\Shadow.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shader\Stationary.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shader\Stationary.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>
@@ -289,15 +118,6 @@
     <ClInclude Include="helper\drawable.h">
       <Filter>helper</Filter>
     </ClInclude>
-    <ClInclude Include="helper\teapot.h">
-      <Filter>helper</Filter>
-    </ClInclude>
-    <ClInclude Include="helper\teapotdata.h">
-      <Filter>helper</Filter>
-    </ClInclude>
-    <ClInclude Include="helper\torus.h">
-      <Filter>helper</Filter>
-    </ClInclude>
     <ClInclude Include="helper\trianglemesh.h">
       <Filter>helper</Filter>
     </ClInclude>
@@ -310,23 +130,11 @@
     <ClInclude Include="helper\plane.h">
       <Filter>helper</Filter>
     </ClInclude>
-    <ClInclude Include="helper\cube.h">
-      <Filter>helper</Filter>
-    </ClInclude>
-    <ClInclude Include="helper\skybox.h">
-      <Filter>helper</Filter>
-    </ClInclude>
     <ClInclude Include="helper\texture.h">
       <Filter>helper</Filter>
     </ClInclude>
     <ClInclude Include="helper\stb\stb_image.h">
       <Filter>helper\stb</Filter>
-    </ClInclude>
-    <ClInclude Include="helper\random.h">
-      <Filter>helper</Filter>
-    </ClInclude>
-    <ClInclude Include="helper\sphere.h">
-      <Filter>helper</Filter>
     </ClInclude>
     <ClInclude Include="helper\frustum.h">
       <Filter>helper</Filter>
