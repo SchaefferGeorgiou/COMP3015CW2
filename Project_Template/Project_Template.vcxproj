@@ -146,7 +146,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
-    <ClCompile Include="helper\frustum.cpp" />
     <ClCompile Include="helper\glslprogram.cpp" />
     <ClCompile Include="helper\glutils.cpp" />
     <ClCompile Include="helper\noisetex.cpp" />
@@ -163,8 +162,6 @@
     <None Include="shader\Animate.vert" />
     <None Include="shader\BlinnPhong.frag" />
     <None Include="shader\BlinnPhong.vert" />
-    <None Include="shader\NoiseMap.frag" />
-    <None Include="shader\NoiseMap.vert" />
     <None Include="shader\Shadow.frag" />
     <None Include="shader\Shadow.vert" />
     <None Include="shader\Stationary.frag" />
@@ -173,7 +170,6 @@
   <ItemGroup>
     <ClInclude Include="helper\aabb.h" />
     <ClInclude Include="helper\drawable.h" />
-    <ClInclude Include="helper\frustum.h" />
     <ClInclude Include="helper\glslprogram.h" />
     <ClInclude Include="helper\glutils.h" />
     <ClInclude Include="helper\noisetex.h" />

@@ -23,7 +23,7 @@ using glm::vec4;
 using glm::mat4;
 
 
-SceneBasic_Uniform::SceneBasic_Uniform() : time(0), angle(0.0f), tPrev(0.0f), rotSpeed(glm::pi<float>() / 8.0f), plane(50.0f, 50.0f, 100, 100)
+SceneBasic_Uniform::SceneBasic_Uniform() : time(0), angle(0.0f), tPrev(0.0f), plane(50.0f, 50.0f, 200, 200)
 {
 	mesh = ObjMesh::load("../Project_Template/media/SmallSpaceFighter.obj", true);
 }
@@ -35,24 +35,13 @@ void SceneBasic_Uniform::initScene()
 {
 	compile();
 
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 
-	glEnable(GL_DEPTH_TEST);
-
-	
-
-
-	createBuffers();
+	createObjects();
 
 	angle = glm::half_pi<float>();
 
-	
-
 	setupFBO();
-
-
-
-	
 
 }
 
@@ -64,9 +53,6 @@ void SceneBasic_Uniform::initScene()
 void SceneBasic_Uniform::compile()
 {
 	try {
-		generateNoise.compileShader("shader/NoiseMap.vert");
-		generateNoise.compileShader("shader/NoiseMap.frag");
-		generateNoise.link();
 
 		animate.compileShader("shader/Animate.vert");
 		animate.compileShader("shader/Animate.frag");
@@ -94,7 +80,8 @@ void SceneBasic_Uniform::compile()
 void SceneBasic_Uniform::setMatrices(GLSLProgram& prog)
 {
 	mat4 mv = view * model;
-			
+	
+	//Split them to get static light
 	prog.setUniform("ModelMatrix", model);
 	prog.setUniform("ViewMatrix", view);
 	prog.setUniform("NormalMatrix", glm::mat3(vec3(mv[0]), vec3(mv[1]), vec3(mv[2])));
@@ -106,6 +93,7 @@ void SceneBasic_Uniform::setMatrices(GLSLProgram& prog)
 
 void SceneBasic_Uniform::update( float t )
 {
+	//Rotate camera
 	float deltaT = t - tPrev;
 	if (tPrev == 0.0f)
 	{
@@ -119,8 +107,6 @@ void SceneBasic_Uniform::update( float t )
 		angle -= glm::two_pi<float>();		
 	}
 
-	
-
 	time = t;
 }
 
@@ -130,19 +116,10 @@ void SceneBasic_Uniform::update( float t )
 void SceneBasic_Uniform::render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	
-	Pass1();
-	
-	
 
-	Pass2();
+	Pass1();//Render
 
-	Pass3();
-	
-	Pass4();
-
-	Pass5();
+	Pass2();//Lighting
 
 	glFinish();
 }
@@ -160,31 +137,29 @@ void SceneBasic_Uniform::resize(int w, int h)
 
 
 
-void SceneBasic_Uniform::createBuffers()
+void SceneBasic_Uniform::createObjects()
 {
-	// Array for quad
-	GLfloat verts[] = {
+	// Arrays for quad used for FBO "projection"
+	GLfloat vertices[] = {
 	-1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
 	-1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, -1.0f, 1.0f, 0.0f
 	};
 
-	GLfloat tc[] = {
+	GLfloat textureCoords[] = {
 	0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
 	0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f
 	};
 
-	// Set up the buffers
-	
 
-	
+	// Set up the VBO
 	glGenBuffers(2, vbos);
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
-	glBufferData(GL_ARRAY_BUFFER, 6 * 3 * sizeof(float), verts, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 6 * 3 * sizeof(float), vertices, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[1]);
-	glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), tc, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), textureCoords, GL_STATIC_DRAW);
 
-	// Set up the vertex array object
+	// Set up the VAO
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
@@ -201,7 +176,6 @@ void SceneBasic_Uniform::createBuffers()
 
 void SceneBasic_Uniform::createGBufTex(GLenum texUnit, GLenum format, GLuint& texid)
 {
-
 	glActiveTexture(texUnit);
 	glGenTextures(1, &texid);
 	glBindTexture(GL_TEXTURE_2D, texid);
@@ -216,55 +190,47 @@ void SceneBasic_Uniform::createGBufTex(GLenum texUnit, GLenum format, GLuint& te
 
 void SceneBasic_Uniform::setupFBO()
 {
-
-	GLuint depthBuf1, posTex1, normTex1, colourTex1, specTex1, noiseTex, shadowTex;
-
+	GLuint depthBuf, posTex, normTex, colourTex, specTex;
 
 	// Create and bind the FBO
-	glGenFramebuffers(1, &deferredFBO1);
-	glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO1);
+	glGenFramebuffers(1, &deferredFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO);
 
 	// The depth buffer
-	glGenRenderbuffers(1, &depthBuf1);
-	glBindRenderbuffer(GL_RENDERBUFFER, depthBuf1);
+	glGenRenderbuffers(1, &depthBuf);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBuf);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 
 	// Create the textures for position, normal and colour
-	createGBufTex(GL_TEXTURE0, GL_RGB32F, posTex1); // Position
-	createGBufTex(GL_TEXTURE1, GL_RGB32F, normTex1); // Normal
-	createGBufTex(GL_TEXTURE2, GL_RGBA8, colourTex1); // Colour/Texture
-	createGBufTex(GL_TEXTURE3, GL_RGBA8, specTex1); //Specular
-	createGBufTex(GL_TEXTURE4, GL_RGBA8, noiseTex); // Noise Map
-	createGBufTex(GL_TEXTURE5, GL_RGB8, shadowTex);//Shadow Map
+	createGBufTex(GL_TEXTURE0, GL_RGB32F, posTex); // Position
+	createGBufTex(GL_TEXTURE1, GL_RGB32F, normTex); // Normal
+	createGBufTex(GL_TEXTURE2, GL_RGB8, colourTex); // Colour/Texture
+	createGBufTex(GL_TEXTURE3, GL_RGB8, specTex); //Specular
 
+	//Create noise texture
 	GLuint noiseTexture = NoiseTex::generate2DTex(6.0f);
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, noiseTexture);
 
 
+	// Attach the textures to the framebuffer	
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuf);
 
-	// Attach the textures to the framebuffer
-	//Obj1	
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuf1);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, posTex, 0);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, posTex1, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normTex, 0);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normTex1, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, colourTex, 0);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, colourTex1, 0);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, specTex1, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, specTex, 0);
 
 
 	GLenum drawBuffers1[] = { GL_NONE,
 							 GL_COLOR_ATTACHMENT0,
 							 GL_COLOR_ATTACHMENT1,
 							 GL_COLOR_ATTACHMENT2,
-							 GL_COLOR_ATTACHMENT3							 
-						
+							 GL_COLOR_ATTACHMENT3
 	};
-
-
 
 	glDrawBuffers(5, drawBuffers1);	
 }
@@ -274,88 +240,50 @@ void SceneBasic_Uniform::setupFBO()
 void SceneBasic_Uniform::Pass1()
 {
 
-
-	generateNoise.use();
+	glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);	
 
 	model = mat4(1.0);
-	view = glm::lookAt(vec3(10.0f * cos(angle), 16.5f, 50.0f * sin(angle)), vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
-	projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.3f, 100.0f);	
-	
-}
 
-void SceneBasic_Uniform::Pass2()
-{
-
-	glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-	
+	//CENTRED ON SPACESHIP LOCATION
+	view = glm::lookAt(vec3(5.0f * cos(angle), 12.0f, 40.0f * sin(angle)), vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.3f, 90.0f);
 
 	//PLANE
 	animate.use();	
-	
-	animate.setUniform("Time", time);
-
-	animate.setUniform("Material.Kd", 1.0f, 0.0f, 0.0f);
+	animate.setUniform("Time", time);//For wave calc
+	animate.setUniform("Material.Kd", 1.0f, 0.0f, 0.3f);//Add colour to noise map
 	animate.setUniform("Material.Ks", 1.0f, 1.0f, 1.0f);
-
-	model = mat4(1.0);
-
 	setMatrices(animate);
-	
 	plane.render();
 
 	//SPACESHIP
 	stationary.use();
-
-	stationary.setUniform("Material.Kd", 0.0f, 0.0f, 0.9f);
+	stationary.setUniform("Material.Kd", 0.0f, 0.3f, 0.9f);
 	stationary.setUniform("Material.Ks", 1.0f, 1.0f, 1.0f);
-
 	model = mat4(1.0);
 	model = glm::translate(model, vec3(0.0f, 5.0f, 0.0f));
-
 	setMatrices(stationary);
-
 	mesh->render();
 }
 
-void SceneBasic_Uniform::Pass3()
-{
-
-
-
-
-
-
-}
-
-void SceneBasic_Uniform::Pass4()
-{
-
-}
-
-void SceneBasic_Uniform::Pass5()
-{
-	lighting.use();
-
+void SceneBasic_Uniform::Pass2()
+{	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
-
-
+	glDisable(GL_DEPTH_TEST);
 	
-	
+	lighting.use();
 
 	view = mat4(1.0);
 	model = mat4(1.0);
 	projection = mat4(1.0);
 
-	setMatrices(lighting);
-
-
 	lighting.setUniform("Light.Intensity", 1.0f);
 	lighting.setUniform("Light.Position", vec4(0.0f, 20.0f, 0.0f, 1.0f));
-	lighting.setUniform("Material.Shininess", 150.0f);
+	lighting.setUniform("Material.Shininess", 50.0f);
+
+	setMatrices(lighting);
 
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, 6);

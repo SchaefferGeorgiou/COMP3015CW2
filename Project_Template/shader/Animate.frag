@@ -2,7 +2,7 @@
 
 
 //VARIABLES
-
+//IN
 layout (location = 0) in vec3 Position;
 layout (location = 1) in vec3 Normal;
 layout (location = 2) in vec2 TexCoord;
@@ -13,6 +13,8 @@ layout (location = 2) out vec3 NormalData;
 layout (location = 3) out vec3 ColourData;
 layout (location = 4) out vec3 SpecularData;
 
+
+//TEXTURES
 layout(binding=4) uniform sampler2D NoiseTex;
 
 
@@ -26,21 +28,17 @@ uniform struct MaterialInfo
 
 
 //METHODS
-
 void saveData()
 {
     vec4 noise = texture(NoiseTex,TexCoord);
 
     PositionData = Position.xyz;
     NormalData = normalize(Normal);
-    ColourData = Material.Kd * noise.a;
+    ColourData = Material.Kd * noise.a;//Creates a noise pattern on the plane
     SpecularData = Material.Ks;
 }
 
-
-
 void main()
 {
-    saveData();    
-    
+    saveData();   
 }

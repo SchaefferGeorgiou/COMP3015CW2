@@ -57,20 +57,11 @@
     <ClCompile Include="helper\stb\stb_image.cpp">
       <Filter>helper\stb</Filter>
     </ClCompile>
-    <ClCompile Include="helper\frustum.cpp">
-      <Filter>helper</Filter>
-    </ClCompile>
     <ClCompile Include="helper\noisetex.cpp">
       <Filter>helper</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader\NoiseMap.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\NoiseMap.vert">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="shader\BlinnPhong.frag">
       <Filter>shaders</Filter>
     </None>
@@ -135,9 +126,6 @@
     </ClInclude>
     <ClInclude Include="helper\stb\stb_image.h">
       <Filter>helper\stb</Filter>
-    </ClInclude>
-    <ClInclude Include="helper\frustum.h">
-      <Filter>helper</Filter>
     </ClInclude>
     <ClInclude Include="helper\noisetex.h">
       <Filter>helper</Filter>

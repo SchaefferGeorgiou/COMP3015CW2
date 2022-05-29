@@ -5,22 +5,21 @@ const vec3 ambient = vec3(0.01f,0.01f,0.01f);
 //IN
 layout (location = 2) in vec2 TexCoord;
 
-//
+//OUT
+layout (location = 0) out vec4 FragColour;
+
+
+//TEXTURES
 layout(binding=0) uniform sampler2D PositionTex1;
 layout(binding=1) uniform sampler2D NormalTex1;
 layout(binding=2) uniform sampler2D ColourTex1;
 layout(binding=3) uniform sampler2D SpecularTex1;
 
 
-
-//OUT
-layout (location = 0) out vec4 FragColour;
-
-
 //STRUCTS
 uniform struct LightInfo
 {
-    
+
     vec4 Position;
     float Intensity;
 
@@ -33,22 +32,20 @@ uniform struct MaterialInfo
 
 }Material;
 
+
 //METHODS
 vec3 blinnPhong(vec3 position, vec3 normal, vec3 colour, vec3 spec) 
 {
     
-    
-
+    //Reset to avoid rainbow noise
     vec3 diffuse = vec3(0.0f);
-        
     vec3 specular = vec3(0.0f);
 
-    vec3 s = normalize(((Light.Position).xyz - position)); //calculate s vector       
-    //vec3 s = normalize(Light.Position.xyz);
+    vec3 s = normalize(((Light.Position).xyz - position));
 
-    float sDotn = max(dot(s,normal), 0.0f) ; //calculate dot product between s and n
+    float sDotn = max(dot(s,normal), 0.0f) ;
     
-    diffuse =  (colour * sDotn) ; //calculate the diffuse
+    diffuse =  (colour * sDotn) ;
 
     if( sDotn > 0.0f )
     {
@@ -64,23 +61,13 @@ vec3 blinnPhong(vec3 position, vec3 normal, vec3 colour, vec3 spec)
 
 void main()
 {
-    vec4 pos1 = texture(PositionTex1, TexCoord);
-    vec4 norm1 = texture(NormalTex1, TexCoord);
-    vec4 diff1 = texture(ColourTex1,TexCoord);
-    vec4 spec1 = texture(SpecularTex1,TexCoord);
-    
-    vec4 colour1 = vec4(blinnPhong(pos1.xyz , norm1.xyz, diff1.xyz , spec1.xyz),1.0);
+//Unpack textures
+    vec4 pos = texture(PositionTex1,TexCoord);
+    vec4 norm = texture(NormalTex1,TexCoord);
+    vec4 diff = texture(ColourTex1,TexCoord);
+    vec4 spec = texture(SpecularTex1,TexCoord);
 
-
-
-    
-    
-    
-
-
-
-    FragColour = colour1 ;
-    
+    FragColour = vec4(blinnPhong(pos.xyz , norm.xyz, diff.xyz , spec.xyz),1.0) ;
 
     
 

@@ -5,7 +5,6 @@
 
 #include <glad/glad.h>
 #include "helper/glslprogram.h"
-#include "helper/frustum.h"
 
 #include "helper/plane.h"
 #include "helper/objmesh.h"
@@ -18,11 +17,11 @@ private:
     GLSLProgram generateNoise, animate, stationary, shadow, lighting;
 
    
-    GLuint deferredFBO1, deferredFBO2;
+    GLuint deferredFBO;
 
     //To project everything onto
     GLuint vao, vbos[2];
-    float angle, tPrev, rotSpeed;     
+    float angle, tPrev;     
 
     Plane plane;
     std::unique_ptr<ObjMesh> mesh;
@@ -32,15 +31,12 @@ private:
     void setMatrices(GLSLProgram&);
     void compile();
 
-    void createBuffers();
+    void createObjects();
     void createGBufTex(GLenum, GLenum, GLuint&);
     void setupFBO();
     
     void Pass1();
     void Pass2();
-    void Pass3();
-    void Pass4();
-    void Pass5();
 
 public:
     SceneBasic_Uniform();
