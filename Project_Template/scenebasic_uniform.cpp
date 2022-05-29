@@ -35,9 +35,12 @@ void SceneBasic_Uniform::initScene()
 {
 	compile();
 
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
 	glEnable(GL_DEPTH_TEST);
+
+	
+
 
 	createBuffers();
 
@@ -127,10 +130,12 @@ void SceneBasic_Uniform::update( float t )
 void SceneBasic_Uniform::render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	
 	
 	Pass1();
 	
+	
+
 	Pass2();
 
 	Pass3();
@@ -196,6 +201,7 @@ void SceneBasic_Uniform::createBuffers()
 
 void SceneBasic_Uniform::createGBufTex(GLenum texUnit, GLenum format, GLuint& texid)
 {
+
 	glActiveTexture(texUnit);
 	glGenTextures(1, &texid);
 	glBindTexture(GL_TEXTURE_2D, texid);
@@ -211,9 +217,9 @@ void SceneBasic_Uniform::createGBufTex(GLenum texUnit, GLenum format, GLuint& te
 void SceneBasic_Uniform::setupFBO()
 {
 
-	GLuint depthBuf1, posTex1, normTex1, colourTex1, specTex1, noiseTex;
+	GLuint depthBuf1, posTex1, normTex1, colourTex1, specTex1, noiseTex, shadowTex;
 
-	
+
 	// Create and bind the FBO
 	glGenFramebuffers(1, &deferredFBO1);
 	glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO1);
@@ -226,10 +232,11 @@ void SceneBasic_Uniform::setupFBO()
 	// Create the textures for position, normal and colour
 	createGBufTex(GL_TEXTURE0, GL_RGB32F, posTex1); // Position
 	createGBufTex(GL_TEXTURE1, GL_RGB32F, normTex1); // Normal
-	createGBufTex(GL_TEXTURE2, GL_RGB8, colourTex1); // Colour/Texture
-	createGBufTex(GL_TEXTURE3, GL_RGB8, specTex1); //Specular
-	createGBufTex(GL_TEXTURE4, GL_RGB8, noiseTex); // Noise Map
-	
+	createGBufTex(GL_TEXTURE2, GL_RGBA8, colourTex1); // Colour/Texture
+	createGBufTex(GL_TEXTURE3, GL_RGBA8, specTex1); //Specular
+	createGBufTex(GL_TEXTURE4, GL_RGBA8, noiseTex); // Noise Map
+	createGBufTex(GL_TEXTURE5, GL_RGB8, shadowTex);//Shadow Map
+
 	GLuint noiseTexture = NoiseTex::generate2DTex(6.0f);
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, noiseTexture);
@@ -248,80 +255,30 @@ void SceneBasic_Uniform::setupFBO()
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, specTex1, 0);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, noiseTex, 0);
-
-
 
 	GLenum drawBuffers1[] = { GL_NONE,
 							 GL_COLOR_ATTACHMENT0,
 							 GL_COLOR_ATTACHMENT1,
 							 GL_COLOR_ATTACHMENT2,
-							 GL_COLOR_ATTACHMENT3,
-							 GL_COLOR_ATTACHMENT4
-							 
+							 GL_COLOR_ATTACHMENT3							 
 						
 	};
 
-	glDrawBuffers(6, drawBuffers1);
 
 
-	GLuint depthBuf2, posTex2, normTex2, colourTex2, specTex2, shadowTex;
-
-	glGenFramebuffers(1, &deferredFBO2);
-	glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO2);
-
-	glGenRenderbuffers(1, &depthBuf2);
-	glBindRenderbuffer(GL_RENDERBUFFER, depthBuf2);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
-	
-
-	createGBufTex(GL_TEXTURE5, GL_RGB32F, posTex2); // Position2
-	createGBufTex(GL_TEXTURE6, GL_RGB32F, normTex2); // Normal2
-	createGBufTex(GL_TEXTURE7, GL_RGB8, colourTex2); // Colour/Texture2
-	createGBufTex(GL_TEXTURE8, GL_RGB8, specTex2); //Specular2
-
-	createGBufTex(GL_TEXTURE9, GL_RGB8, shadowTex);//Shadow Map
-
-	//Obj2
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuf2);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, posTex2, 0);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normTex2, 0);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, colourTex2, 0);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, specTex2, 0);
-
-	//SHADOW
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, shadowTex, 0);
-
-
-	GLenum drawBuffers2[] = { GL_NONE,
-						  GL_COLOR_ATTACHMENT0,
-						  GL_COLOR_ATTACHMENT1,
-						  GL_COLOR_ATTACHMENT2,
-						  GL_COLOR_ATTACHMENT3,
-						  GL_COLOR_ATTACHMENT4
-
-	};	
-
-	glDrawBuffers(6, drawBuffers2);
+	glDrawBuffers(5, drawBuffers1);	
 }
 
 #pragma region Passes
 
 void SceneBasic_Uniform::Pass1()
 {
+
+
 	generateNoise.use();
 
-	glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-
-
 	model = mat4(1.0);
-	view = glm::lookAt(vec3(10.0f * cos(angle), 6.5f, 17.0f * sin(angle)), vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	view = glm::lookAt(vec3(10.0f * cos(angle), 16.5f, 50.0f * sin(angle)), vec3(0.0f, 5.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 	projection = glm::perspective(glm::radians(60.0f), (float)width / height, 0.3f, 100.0f);	
 	
 }
@@ -329,17 +286,18 @@ void SceneBasic_Uniform::Pass1()
 void SceneBasic_Uniform::Pass2()
 {
 
-	animate.use();
-	
+	glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
+	glEnable(GL_DEPTH_TEST);
 	
+
+	//PLANE
+	animate.use();	
 	
 	animate.setUniform("Time", time);
 
-	animate.setUniform("Material.Kd", 0.9f, 0.0f, 0.3f);
-	animate.setUniform("Material.Ks", 0.9f, 0.9f, 0.9f);
+	animate.setUniform("Material.Kd", 1.0f, 0.0f, 0.0f);
+	animate.setUniform("Material.Ks", 1.0f, 1.0f, 1.0f);
 
 	model = mat4(1.0);
 
@@ -347,20 +305,11 @@ void SceneBasic_Uniform::Pass2()
 	
 	plane.render();
 
-
-	
-}
-
-void SceneBasic_Uniform::Pass3()
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, deferredFBO2);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-
+	//SPACESHIP
 	stationary.use();
 
-	stationary.setUniform("Material.Kd", 0.0f, 0.3f, 0.9f);
-	stationary.setUniform("Material.Ks", 0.9f, 0.9f, 0.9f);
+	stationary.setUniform("Material.Kd", 0.0f, 0.0f, 0.9f);
+	stationary.setUniform("Material.Ks", 1.0f, 1.0f, 1.0f);
 
 	model = mat4(1.0);
 	model = glm::translate(model, vec3(0.0f, 5.0f, 0.0f));
@@ -368,6 +317,15 @@ void SceneBasic_Uniform::Pass3()
 	setMatrices(stationary);
 
 	mesh->render();
+}
+
+void SceneBasic_Uniform::Pass3()
+{
+
+
+
+
+
 
 }
 
@@ -382,8 +340,11 @@ void SceneBasic_Uniform::Pass5()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glDisable(GL_DEPTH_TEST);
+
+
+
+	
+	
 
 	view = mat4(1.0);
 	model = mat4(1.0);
@@ -394,7 +355,7 @@ void SceneBasic_Uniform::Pass5()
 
 	lighting.setUniform("Light.Intensity", 1.0f);
 	lighting.setUniform("Light.Position", vec4(0.0f, 20.0f, 0.0f, 1.0f));
-	lighting.setUniform("Material.Shininess", 60.0f);
+	lighting.setUniform("Material.Shininess", 150.0f);
 
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, 6);

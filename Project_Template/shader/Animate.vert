@@ -35,11 +35,11 @@ void main()
     
 
     vec3 norm = vec3(0.0);
-    norm.xyz = normalize(vec3(cos(u),1.0, cos(v)));
+    norm.xy = normalize(vec2(cos(u) +cos(v) ,1.0));
     
 
     Position = ( vec4(pos,1.0)).xyz;
-    Normal = normalize(NormalMatrix * VertexNormal);   
+    Normal = normalize(NormalMatrix * norm);   
     
     TexCoord = VertexTexCoord;
 
