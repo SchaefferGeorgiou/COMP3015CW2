@@ -25,7 +25,7 @@ using glm::mat4;
 
 SceneBasic_Uniform::SceneBasic_Uniform() : time(0), angle(0.0f), tPrev(0.0f), plane(50.0f, 50.0f, 200, 200)
 {
-	mesh = ObjMesh::load("../Project_Template/media/SmallSpaceFighter.obj", true);
+	mesh = ObjMesh::load("media/SmallSpaceFighter.obj", true);
 }
 
 #pragma region initScene
