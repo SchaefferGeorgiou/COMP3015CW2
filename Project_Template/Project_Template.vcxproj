@@ -162,8 +162,6 @@
     <None Include="shader\Animate.vert" />
     <None Include="shader\BlinnPhong.frag" />
     <None Include="shader\BlinnPhong.vert" />
-    <None Include="shader\Shadow.frag" />
-    <None Include="shader\Shadow.vert" />
     <None Include="shader\Stationary.frag" />
     <None Include="shader\Stationary.vert" />
   </ItemGroup>

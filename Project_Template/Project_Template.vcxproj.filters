@@ -74,12 +74,6 @@
     <None Include="shader\Animate.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shader\Shadow.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shader\Shadow.vert">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="shader\Stationary.frag">
       <Filter>shaders</Filter>
     </None>
